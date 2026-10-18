@@ -13,7 +13,7 @@
   --accent-line: rgba(62, 207, 142, 0.35);
   --amber: #e0b354;
   --blue: #6cb6ff;
-  --font-sans: "Inter", system-ui, -apple-system, sans-serif;
+  --font-sans: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
   --font-mono: "JetBrains Mono", ui-monospace, "SF Mono", Menlo, monospace;
   --max: 880px;
   --radius: 10px;
@@ -36,8 +36,8 @@ body {
   font-family: var(--font-sans);
   background: var(--bg);
   color: var(--text);
-  line-height: 1.65;
-  font-size: 16px;
+  line-height: 1.7;
+  font-size: 15px;
   -webkit-font-smoothing: antialiased;
   overflow-x: hidden;
 }
@@ -173,7 +173,7 @@ main,
   font-family: var(--font-mono);
   font-size: clamp(2.3rem, 6.5vw, 3.6rem);
   font-weight: 700;
-  letter-spacing: -0.03em;
+  letter-spacing: -0.02em;
   line-height: 1.1;
   color: var(--text-strong);
   margin-bottom: 18px;
