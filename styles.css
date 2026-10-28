@@ -653,6 +653,190 @@ main,
   color: var(--accent);
 }
 
+/* ---------- CRT / PHOSPHOR LAYERS ---------- */
+html {
+  scrollbar-gutter: stable;
+}
+
+html.booting,
+html.booting body {
+  overflow: hidden;
+}
+
+.crt {
+  position: fixed;
+  inset: 0;
+  z-index: 90;
+  pointer-events: none;
+}
+
+.crt__scanlines {
+  position: absolute;
+  inset: 0;
+  background: repeating-linear-gradient(
+    to bottom,
+    rgba(0, 0, 0, 0) 0,
+    rgba(0, 0, 0, 0) 2px,
+    rgba(0, 0, 0, 0.12) 2px,
+    rgba(0, 0, 0, 0.12) 3px
+  );
+  opacity: 0.7;
+}
+
+.crt__vignette {
+  position: absolute;
+  inset: 0;
+  background: radial-gradient(ellipse at center, transparent 60%, rgba(0, 0, 0, 0.38) 100%);
+}
+
+.crt__flicker::after {
+  content: "";
+  position: absolute;
+  left: 0;
+  right: 0;
+  top: -20%;
+  height: 20%;
+  background: linear-gradient(to bottom, transparent, rgba(62, 207, 142, 0.035), transparent);
+  animation: crt-sweep 7.5s linear infinite;
+}
+
+@keyframes crt-sweep {
+  to { transform: translateY(700%); }
+}
+
+html.crt-off .crt {
+  display: none;
+}
+
+.crt-toggle {
+  font-family: var(--font-mono);
+  font-size: 0.7rem;
+  color: var(--muted-2);
+  background: transparent;
+  border: 1px solid var(--border);
+  border-radius: 6px;
+  padding: 4px 8px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: color 0.15s ease, border-color 0.15s ease;
+}
+
+.crt-toggle:hover {
+  color: var(--accent);
+  border-color: var(--accent-line);
+}
+
+/* ---------- BOOT SEQUENCE ---------- */
+.boot {
+  position: fixed;
+  inset: 0;
+  z-index: 200;
+  background: #05080b;
+  display: flex;
+  align-items: center;
+  padding: clamp(24px, 9vw, 110px);
+  font-family: var(--font-mono);
+  font-size: clamp(0.78rem, 1.6vw, 0.92rem);
+  line-height: 1.85;
+  color: var(--text);
+  cursor: pointer;
+}
+
+.boot--done {
+  opacity: 0;
+  visibility: hidden;
+  transition: opacity 0.45s ease, visibility 0.45s;
+}
+
+.boot__log {
+  width: 100%;
+  max-width: 640px;
+}
+
+.boot__line {
+  opacity: 0;
+  animation: boot-line 0.18s ease forwards;
+  color: var(--muted);
+  white-space: pre-wrap;
+}
+
+.boot__line .ok {
+  color: var(--accent);
+}
+
+.boot__line .hi {
+  color: var(--text-strong);
+}
+
+.boot__line .cmdline {
+  color: var(--accent);
+}
+
+@keyframes boot-line {
+  to { opacity: 1; }
+}
+
+.boot__skip {
+  position: absolute;
+  right: clamp(20px, 6vw, 48px);
+  bottom: clamp(18px, 5vw, 36px);
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: var(--muted-2);
+  background: none;
+  border: 0;
+  cursor: pointer;
+  letter-spacing: 0.02em;
+  animation: skip-pulse 2.4s ease-in-out infinite;
+}
+
+@keyframes skip-pulse {
+  0%, 100% { opacity: 0.45; }
+  50% { opacity: 0.9; }
+}
+
+/* ---------- PHOSPHOR ACCENTS ---------- */
+.prompt,
+.section__num,
+.footer__prompt {
+  text-shadow: 0 0 14px rgba(62, 207, 142, 0.35);
+}
+
+.hero__name {
+  text-shadow: 1px 0 rgba(62, 207, 142, 0.16), -1px 0 rgba(108, 182, 255, 0.12);
+}
+
+.hero__name:hover {
+  animation: name-glitch 0.4s steps(2) 1;
+  text-shadow: 2px 0 rgba(62, 207, 142, 0.5), -2px 0 rgba(108, 182, 255, 0.4);
+}
+
+@keyframes name-glitch {
+  0%, 100% { transform: none; }
+  20% { transform: translate(-1px, 1px); }
+  40% { transform: translate(1px, -1px); }
+  60% { transform: translate(-1px, 0); }
+  80% { transform: translate(1px, 1px); }
+}
+
+/* terminal loading dots */
+.term-dots {
+  color: var(--accent);
+}
+
+.term-dots::after {
+  content: "";
+  animation: dotty 0.9s steps(1, end) infinite;
+}
+
+@keyframes dotty {
+  0% { content: ""; }
+  25% { content: "."; }
+  50% { content: ".."; }
+  75% { content: "..."; }
+  100% { content: ""; }
+}
+
 /* ---------- REVEAL ---------- */
 .reveal {
   opacity: 0;
@@ -719,7 +903,18 @@ main,
 
   .dot,
   .caret,
-  .caret--static {
+  .caret--static,
+  .boot__skip,
+  .crt__flicker::after {
+    animation: none;
+  }
+
+  .hero__name:hover {
+    animation: none;
+  }
+
+  .term-dots::after {
+    content: "...";
     animation: none;
   }
 }

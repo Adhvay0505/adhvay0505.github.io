@@ -1,12 +1,105 @@
 (function () {
   "use strict";
 
+  var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+
   var yearEl = document.getElementById("year");
   if (yearEl) yearEl.textContent = String(new Date().getFullYear());
 
-  var reduceMotion = window.matchMedia("(prefers-reduced-motion: reduce)").matches;
+  // ---- CRT toggle (persisted) ----
+  var crtToggle = document.getElementById("crt-toggle");
+  var crtOn = true;
+  try {
+    if (localStorage.getItem("crt") === "off") crtOn = false;
+  } catch (e) {}
 
-  // Scroll reveal
+  function applyCrt() {
+    document.documentElement.classList.toggle("crt-off", !crtOn);
+    if (crtToggle) {
+      crtToggle.textContent = crtOn ? "[ crt: on ]" : "[ crt: off ]";
+      crtToggle.setAttribute("aria-pressed", String(crtOn));
+    }
+  }
+
+  applyCrt();
+
+  if (crtToggle) {
+    crtToggle.addEventListener("click", function () {
+      crtOn = !crtOn;
+      try { localStorage.setItem("crt", crtOn ? "on" : "off"); } catch (e) {}
+      applyCrt();
+    });
+  }
+
+  // ---- Boot sequence (once per session, skippable) ----
+  (function boot() {
+    var bootEl = document.getElementById("boot");
+    var logEl = document.getElementById("boot-log");
+    if (!bootEl || !logEl) return;
+
+    var seen = false;
+    try { seen = sessionStorage.getItem("booted") === "1"; } catch (e) {}
+
+    if (reduceMotion || seen) {
+      bootEl.remove();
+      return;
+    }
+
+    var lines = [
+      "KALI GNU/Linux 2026.1 (adhvay) tty1",
+      "",
+      'adhvay login: <span class="hi">visitor</span>',
+      '<span class="ok">[  OK  ]</span> Mounted /home/adhvay',
+      '<span class="ok">[  OK  ]</span> Loaded profile: <span class="hi">adhvay-banerjee</span>',
+      '<span class="ok">[  OK  ]</span> Started <span class="hi">portfolio.service</span>',
+      '<span class="ok">[  OK  ]</span> Reached target <span class="hi">personal-brand.target</span>',
+      "",
+      'Welcome. <span class="cmdline">visitor@portfolio</span>:<span class="cmdline">~</span>$ '
+    ];
+
+    document.documentElement.classList.add("booting");
+
+    var i = 0;
+    var timer;
+    var finished = false;
+
+    function finish() {
+      if (finished) return;
+      finished = true;
+      clearTimeout(timer);
+      try { sessionStorage.setItem("booted", "1"); } catch (e) {}
+      document.documentElement.classList.remove("booting");
+      bootEl.classList.add("boot--done");
+      document.removeEventListener("keydown", onKey);
+      setTimeout(function () {
+        if (bootEl.parentNode) bootEl.parentNode.removeChild(bootEl);
+      }, 520);
+    }
+
+    function onKey(e) {
+      if (e.key === "Tab" || e.key === "Shift" || e.key === "Control" || e.key === "Alt" || e.key === "Meta") return;
+      finish();
+    }
+
+    function next() {
+      if (i >= lines.length) {
+        timer = setTimeout(finish, 620);
+        return;
+      }
+      var p = document.createElement("p");
+      p.className = "boot__line";
+      p.innerHTML = lines[i] || "&nbsp;";
+      logEl.appendChild(p);
+      i += 1;
+      timer = setTimeout(next, i === 1 ? 260 : 120);
+    }
+
+    bootEl.addEventListener("click", finish);
+    document.addEventListener("keydown", onKey);
+    timer = setTimeout(next, 180);
+  })();
+
+  // ---- Scroll reveal ----
   var revealEls = document.querySelectorAll(".reveal");
   if ("IntersectionObserver" in window && !reduceMotion) {
     var io = new IntersectionObserver(
@@ -25,7 +118,7 @@
     revealEls.forEach(function (el) { el.classList.add("is-visible"); });
   }
 
-  // Terminal typing effect for `cat about_me.txt`
+  // ---- Terminal typing effect for `cat about_me.txt` ----
   var cmdEl = document.getElementById("type-cmd");
   var caret = document.getElementById("caret");
   var output = document.getElementById("term-output");
@@ -63,10 +156,15 @@
         setTimeout(typeChar, 38 + Math.random() * 45);
       } else {
         if (caret) caret.style.display = "none";
+        var dots = document.createElement("span");
+        dots.className = "term-dots";
+        dots.setAttribute("aria-hidden", "true");
+        cmdEl.parentNode.insertBefore(dots, cmdEl.nextSibling);
         setTimeout(function () {
+          if (dots.parentNode) dots.parentNode.removeChild(dots);
           output.hidden = false;
           revealLines();
-        }, 320);
+        }, 520);
       }
     })();
   }

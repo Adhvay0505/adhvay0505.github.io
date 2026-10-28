@@ -33,6 +33,19 @@
 <body>
   <div class="bg-glow" aria-hidden="true"></div>
 
+  <!-- CRT aesthetic layer (ported vibe) -->
+  <div class="crt" aria-hidden="true">
+    <div class="crt__scanlines"></div>
+    <div class="crt__vignette"></div>
+    <div class="crt__flicker"></div>
+  </div>
+
+  <!-- Boot sequence, plays once per session -->
+  <div class="boot" id="boot" role="status" aria-live="polite">
+    <div class="boot__log" id="boot-log"></div>
+    <button class="boot__skip" type="button">press any key to skip</button>
+  </div>
+
   <header class="nav">
     <div class="nav__inner">
       <a class="nav__brand" href="#top"><span class="nav__prompt">~/</span>adhvay</a>
@@ -43,6 +56,7 @@
         <a href="#credentials">credentials</a>
         <a href="#contact">contact</a>
       </nav>
+      <button class="crt-toggle" id="crt-toggle" type="button" aria-pressed="true">[ crt: on ]</button>
     </div>
   </header>
 
