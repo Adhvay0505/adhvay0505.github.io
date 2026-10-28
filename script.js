@@ -7,7 +7,7 @@
   if (yearEl) yearEl.textContent = String(new Date().getFullYear());
 
   // ---- CRT toggle (persisted) ----
-  var crtToggle = document.getElementById("crt-toggle");
+  var crtToggles = document.querySelectorAll("[data-crt-toggle]");
   var crtOn = true;
   try {
     if (localStorage.getItem("crt") === "off") crtOn = false;
@@ -15,19 +15,69 @@
 
   function applyCrt() {
     document.documentElement.classList.toggle("crt-off", !crtOn);
-    if (crtToggle) {
-      crtToggle.textContent = crtOn ? "[ crt: on ]" : "[ crt: off ]";
-      crtToggle.setAttribute("aria-pressed", String(crtOn));
-    }
+    crtToggles.forEach(function (btn) {
+      btn.textContent = crtOn ? "[ crt: on ]" : "[ crt: off ]";
+      btn.setAttribute("aria-pressed", String(crtOn));
+    });
   }
 
   applyCrt();
 
-  if (crtToggle) {
-    crtToggle.addEventListener("click", function () {
+  crtToggles.forEach(function (btn) {
+    btn.addEventListener("click", function () {
       crtOn = !crtOn;
       try { localStorage.setItem("crt", crtOn ? "on" : "off"); } catch (e) {}
       applyCrt();
+    });
+  });
+
+  // ---- Mobile nav sheet ----
+  var menuToggle = document.getElementById("menu-toggle");
+  var menuPanel = document.getElementById("mobile-menu");
+
+  if (menuToggle && menuPanel) {
+    var menuOpen = false;
+
+    function setMenu(open) {
+      menuOpen = open;
+      menuToggle.setAttribute("aria-expanded", String(open));
+      menuPanel.classList.toggle("is-open", open);
+    }
+
+    menuToggle.addEventListener("click", function (e) {
+      e.stopPropagation();
+      setMenu(!menuOpen);
+    });
+
+    menuPanel.addEventListener("click", function (e) {
+      var link = e.target.closest("a");
+      if (!link) return;
+      setMenu(false);
+      var hash = link.getAttribute("href");
+      if (hash && hash.charAt(0) === "#") {
+        var target = document.querySelector(hash);
+        if (target) {
+          target.setAttribute("tabindex", "-1");
+          target.focus({ preventScroll: true });
+        }
+      }
+    });
+
+    document.addEventListener("click", function (e) {
+      if (menuOpen && !menuPanel.contains(e.target) && !menuToggle.contains(e.target)) {
+        setMenu(false);
+      }
+    });
+
+    document.addEventListener("keydown", function (e) {
+      if (menuOpen && e.key === "Escape") {
+        setMenu(false);
+        menuToggle.focus();
+      }
+    });
+
+    window.addEventListener("resize", function () {
+      if (window.innerWidth > 720 && menuOpen) setMenu(false);
     });
   }
 
