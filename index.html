@@ -57,7 +57,10 @@
         <a href="#credentials">credentials</a>
         <a href="#contact">contact</a>
       </nav>
-      <button class="crt-toggle nav__crt" data-crt-toggle type="button" aria-pressed="true">[ crt: on ]</button>
+      <button class="nav__search" type="button" data-palette-open aria-haspopup="dialog" aria-keyshortcuts="Control+K Meta+K">
+        <span class="nav__search-label">jump to</span>
+        <span class="nav__search-kbd" data-shortcut>&#8984;K</span>
+      </button>
       <button class="nav__menu" id="menu-toggle" type="button" aria-expanded="false" aria-controls="mobile-menu">
         <span class="nav__menu-lines" aria-hidden="true"><i></i><i></i></span>
         <span class="nav__menu-text">menu</span>
@@ -72,7 +75,10 @@
         <a href="#contact"><span class="mobile-menu__num">05</span>contact</a>
       </nav>
       <div class="mobile-menu__foot">
-        <button class="crt-toggle" data-crt-toggle type="button" aria-pressed="true">[ crt: on ]</button>
+        <button class="mobile-menu__search" type="button" data-palette-open aria-haspopup="dialog" aria-keyshortcuts="Control+K Meta+K">
+          <span>jump to&hellip;</span>
+          <span class="mobile-menu__kbd" data-shortcut>&#8984;K</span>
+        </button>
         <span class="mobile-menu__status"><span class="dot" aria-hidden="true"></span>open to interesting problems</span>
       </div>
     </div>
@@ -259,6 +265,59 @@
   <footer class="footer">
     <p><a class="footer__prompt" href="#top" aria-label="Back to top">exit</a> <span class="sep">·</span> © <span id="year">2026</span> Adhvay Banerjee</p>
   </footer>
+
+  <div class="palette" id="palette" hidden>
+    <div class="palette__backdrop" data-palette-close></div>
+    <div class="palette__panel" role="dialog" aria-modal="true" aria-labelledby="palette-title">
+      <div class="palette__head">
+        <span class="palette__dots" aria-hidden="true"><i></i><i></i><i></i></span>
+        <span id="palette-title">jump to</span>
+        <span class="palette__key" data-shortcut>&#8984;K</span>
+      </div>
+      <div class="palette__search">
+        <span class="palette__caret" aria-hidden="true">&gt;</span>
+        <input class="palette__input" id="palette-input" type="text" role="combobox" aria-expanded="true"
+               aria-controls="palette-list" aria-autocomplete="list" autocomplete="off" autocapitalize="off"
+               spellcheck="false" aria-label="Jump to section or link" placeholder="section or link&hellip;" />
+      </div>
+      <ul class="palette__list" id="palette-list" role="listbox" aria-label="Jump targets">
+        <li class="palette__item" id="palette-item-0" role="option" data-href="#top" data-keywords="home start intro top hero">
+          <span class="palette__num">~</span><span class="palette__label">top</span><span class="palette__hint">hero</span>
+        </li>
+        <li class="palette__item" id="palette-item-1" role="option" data-href="#about" data-keywords="about me bio whoami summary">
+          <span class="palette__num">01</span><span class="palette__label">about</span><span class="palette__hint">#about</span>
+        </li>
+        <li class="palette__item" id="palette-item-2" role="option" data-href="#experience" data-keywords="experience work jobs career timeline shopback apna kubotor terraeagle">
+          <span class="palette__num">02</span><span class="palette__label">experience</span><span class="palette__hint">#experience</span>
+        </li>
+        <li class="palette__item" id="palette-item-3" role="option" data-href="#skills" data-keywords="skills stack tools languages frameworks cloud security">
+          <span class="palette__num">03</span><span class="palette__label">skills</span><span class="palette__hint">#skills</span>
+        </li>
+        <li class="palette__item" id="palette-item-4" role="option" data-href="#credentials" data-keywords="credentials certificates certs education">
+          <span class="palette__num">04</span><span class="palette__label">credentials</span><span class="palette__hint">#credentials</span>
+        </li>
+        <li class="palette__item" id="palette-item-5" role="option" data-href="#contact" data-keywords="contact reach hire talk">
+          <span class="palette__num">05</span><span class="palette__label">contact</span><span class="palette__hint">#contact</span>
+        </li>
+        <li class="palette__item" id="palette-item-6" role="option" data-href="https://www.linkedin.com/in/adhvay-banerjee" data-external="true" data-keywords="linkedin work message connect">
+          <span class="palette__num">&#8599;</span><span class="palette__label">LinkedIn</span><span class="palette__hint">linkedin.com</span>
+        </li>
+        <li class="palette__item" id="palette-item-7" role="option" data-href="https://github.com/Adhvay0505" data-external="true" data-keywords="github code repos source">
+          <span class="palette__num">&#8599;</span><span class="palette__label">GitHub</span><span class="palette__hint">github.com</span>
+        </li>
+        <li class="palette__item" id="palette-item-8" role="option" data-href="https://tryhackme.com/p/Adhv4y" data-external="true" data-keywords="tryhackme thm security labs ctf">
+          <span class="palette__num">&#8599;</span><span class="palette__label">TryHackMe</span><span class="palette__hint">tryhackme.com</span>
+        </li>
+        <li class="palette__empty" hidden>no matches &mdash; try &ldquo;skills&rdquo;</li>
+      </ul>
+      <div class="palette__foot">
+        <span><span class="palette__kbd">&#8593;</span><span class="palette__kbd">&#8595;</span> navigate</span>
+        <span><span class="palette__kbd">&#8629;</span> open</span>
+        <span><span class="palette__kbd">esc</span> close</span>
+        <span class="palette__foot-brand">adhvay@portfolio</span>
+      </div>
+    </div>
+  </div>
 
   <script src="script.js"></script>
 </body>
