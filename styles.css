@@ -809,6 +809,24 @@ html.booting body {
   cursor: pointer;
 }
 
+.boot--idle .boot__skip {
+  display: none;
+}
+
+.boot__idle-line {
+  color: var(--muted);
+}
+
+.boot__idle-cta {
+  color: var(--accent);
+  animation: idle-pulse 1.8s ease-in-out infinite;
+}
+
+@keyframes idle-pulse {
+  0%, 100% { opacity: 0.55; }
+  50% { opacity: 1; }
+}
+
 .boot--done {
   opacity: 0;
   visibility: hidden;

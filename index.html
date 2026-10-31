@@ -42,8 +42,10 @@
   </div>
 
   <!-- Boot sequence, plays once per session -->
-  <div class="boot" id="boot" role="status" aria-live="polite">
-    <div class="boot__log" id="boot-log"></div>
+  <div class="boot boot--idle" id="boot" role="status" aria-live="polite">
+    <div class="boot__log" id="boot-log">
+      <p class="boot__line boot__idle-line">visitor@portfolio:~$ <span class="boot__idle-cta">click or press any key to power on</span></p>
+    </div>
     <button class="boot__skip" type="button">press any key to skip</button>
   </div>
 

@@ -230,14 +230,14 @@
     });
   }
 
-  // ---- Boot sequence (once per session, skippable) ----
+  // ---- Boot sequence (once per session, starts on first input) ----
   (function boot() {
     var bootEl = document.getElementById("boot");
     var logEl = document.getElementById("boot-log");
     if (!bootEl || !logEl) return;
 
     var seen = false;
-    try { seen = sessionStorage.getItem("booted") === "1"; } catch (e) {}
+    try { seen = sessionStorage.getItem("booted-v2") === "1"; } catch (e) {}
 
     if (reduceMotion || seen) {
       bootEl.remove();
@@ -258,61 +258,34 @@
 
     document.documentElement.classList.add("booting");
 
-    // ---- Startup sound (best effort: autoplay, else first gesture) ----
     var intro = document.getElementById("intro-sound");
-    var introPlaying = false;
-    var introDone = false;
-
-    function introStart() {
-      if (!intro || introPlaying || introDone) return;
-      var p;
-      try {
-        p = intro.play();
-      } catch (e) {
-        return;
-      }
-      if (!p || !p.then) {
-        introPlaying = true;
-        introCleanup();
-        return;
-      }
-      p.then(function () {
-        introPlaying = true;
-        introCleanup();
-      }).catch(function () {
-        introPlaying = false;
-      });
-    }
-
-    function introGesture() {
-      introStart();
-    }
-
-    function introCleanup() {
-      document.removeEventListener("pointerdown", introGesture, true);
-      document.removeEventListener("keydown", introGesture, true);
-      document.removeEventListener("touchstart", introGesture, true);
-    }
-
-    if (intro) {
-      intro.volume = 0.35;
-      introStart();
-      document.addEventListener("pointerdown", introGesture, true);
-      document.addEventListener("keydown", introGesture, true);
-      document.addEventListener("touchstart", introGesture, true);
-    }
-
     var i = 0;
     var timer;
+    var started = false;
     var finished = false;
+
+    function introStart() {
+      if (!intro) return;
+      intro.volume = 0.35;
+      var p;
+      try { p = intro.play(); } catch (e) { return; }
+      if (p && p.catch) p.catch(function () {});
+    }
+
+    function begin() {
+      if (started || finished) return;
+      started = true;
+      bootEl.classList.remove("boot--idle");
+      logEl.innerHTML = "";
+      introStart();
+      timer = setTimeout(next, 180);
+    }
 
     function finish() {
       if (finished) return;
       finished = true;
       clearTimeout(timer);
-      introDone = true;
-      introCleanup();
-      try { sessionStorage.setItem("booted", "1"); } catch (e) {}
+      try { sessionStorage.setItem("booted-v2", "1"); } catch (e) {}
       document.documentElement.classList.remove("booting");
       bootEl.classList.add("boot--done");
       document.removeEventListener("keydown", onKey);
@@ -323,6 +296,11 @@
 
     function onKey(e) {
       if (e.key === "Tab" || e.key === "Shift" || e.key === "Control" || e.key === "Alt" || e.key === "Meta") return;
+      if (e.repeat) return;
+      if (!started) {
+        begin();
+        return;
+      }
       finish();
     }
 
@@ -339,9 +317,11 @@
       timer = setTimeout(next, i === 1 ? 260 : 120);
     }
 
-    bootEl.addEventListener("click", finish);
+    bootEl.addEventListener("click", function () {
+      if (!started) begin();
+      else finish();
+    });
     document.addEventListener("keydown", onKey);
-    timer = setTimeout(next, 180);
   })();
 
   // ---- Scroll reveal ----
