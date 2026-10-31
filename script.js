@@ -258,6 +258,50 @@
 
     document.documentElement.classList.add("booting");
 
+    // ---- Startup sound (best effort: autoplay, else first gesture) ----
+    var intro = document.getElementById("intro-sound");
+    var introPlaying = false;
+    var introDone = false;
+
+    function introStart() {
+      if (!intro || introPlaying || introDone) return;
+      var p;
+      try {
+        p = intro.play();
+      } catch (e) {
+        return;
+      }
+      if (!p || !p.then) {
+        introPlaying = true;
+        introCleanup();
+        return;
+      }
+      p.then(function () {
+        introPlaying = true;
+        introCleanup();
+      }).catch(function () {
+        introPlaying = false;
+      });
+    }
+
+    function introGesture() {
+      introStart();
+    }
+
+    function introCleanup() {
+      document.removeEventListener("pointerdown", introGesture, true);
+      document.removeEventListener("keydown", introGesture, true);
+      document.removeEventListener("touchstart", introGesture, true);
+    }
+
+    if (intro) {
+      intro.volume = 0.35;
+      introStart();
+      document.addEventListener("pointerdown", introGesture, true);
+      document.addEventListener("keydown", introGesture, true);
+      document.addEventListener("touchstart", introGesture, true);
+    }
+
     var i = 0;
     var timer;
     var finished = false;
@@ -266,6 +310,8 @@
       if (finished) return;
       finished = true;
       clearTimeout(timer);
+      introDone = true;
+      introCleanup();
       try { sessionStorage.setItem("booted", "1"); } catch (e) {}
       document.documentElement.classList.remove("booting");
       bootEl.classList.add("boot--done");
